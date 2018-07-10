@@ -19,7 +19,6 @@
         <b-form-input
           id="password"
           type="password"
-          required
           placeholder="password"
           v-model.trim="password"
           />
@@ -33,8 +32,9 @@
             Remember Me
           </b-form-checkbox>
         </b-form-checkbox-group>
-        <b-button type="submit" variant="primary">Login</b-button>
+        <b-button type="submit" variant="primary" :disabled="loggingIn">Login</b-button>
       </b-form-group>
+      <b-alert variant="danger" :show="loginError">{{ errorMessage }}</b-alert>
   </b-form>
 </template>
 
@@ -43,7 +43,13 @@ import { mapState, mapGetters } from 'vuex'
 
 export default {
   name: 'LoginForm',
-  computed: {},
+  computed: {
+    ...mapState({
+      loggingIn: state => state.token.metadata.isFetching,
+      errorMessage: state => state.token.payload && state.token.payload.error
+    }),
+    ...mapGetters(['loggedIn', 'loginError'])
+  },
   data: () => ({
     username: '',
     password: '',
@@ -52,6 +58,10 @@ export default {
   methods: {
     onSubmit(e) {
       e.preventDefault();
+      this.$store.dispatch('login', {
+        username: this.username,
+        password: this.password
+      })
     },
   },
 };

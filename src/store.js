@@ -17,7 +17,9 @@ export default new Vuex.Store({
     },
   },
   getters: {
-    loggedIn: state => state.token.data !== undefined,
+    loggedIn: state =>
+      state.token.payload && state.token.payload.token !== undefined,
+    loginError: state => state.token.payload && state.token.payload.error !== undefined,
   },
   mutations: {
     fetchingToken: state => {
@@ -34,7 +36,7 @@ export default new Vuex.Store({
     },
   },
   actions: {
-    async login({ commit }, username, password) {
+    async login({ commit }, { username, password }) {
       commit('fetchingToken');
       commit('updateToken', await login(username, password));
     },
