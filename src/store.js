@@ -19,7 +19,8 @@ export default new Vuex.Store({
   getters: {
     loggedIn: state =>
       state.token.payload && state.token.payload.token !== undefined,
-    loginError: state => state.token.payload && state.token.payload.error !== undefined,
+    loginError: state =>
+      state.token.payload && state.token.payload.error !== undefined,
   },
   mutations: {
     fetchingToken: state => {
@@ -34,11 +35,21 @@ export default new Vuex.Store({
         },
       };
     },
+    tokenError: (state, payload) => {
+      state.token = {
+        payload,
+        metadata: { isFetching: false },
+      };
+    },
   },
   actions: {
     async login({ commit }, { username, password }) {
       commit('fetchingToken');
-      commit('updateToken', await login(username, password));
+      try {
+        commit('updateToken', await login(username, password));
+      } catch (error) {
+        commit('tokenError', { error: error.message });
+      }
     },
   },
 });

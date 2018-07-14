@@ -7,7 +7,6 @@
         <b-form-input 
           id="username"
           type="email"
-          required
           placeholder="email@example.com"
           v-model.trim="username"
         />
@@ -56,12 +55,16 @@ export default {
     remember: false,
   }),
   methods: {
-    onSubmit(e) {
+    async onSubmit(e) {
       e.preventDefault();
-      this.$store.dispatch('login', {
+      await this.$store.dispatch('login', {
         username: this.username,
         password: this.password
       })
+      if (!this.loginError) {
+        console.log(this.$router)
+        this.$router.push('/')
+      }
     },
   },
 };
